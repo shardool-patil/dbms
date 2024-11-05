@@ -5,103 +5,60 @@ ROLL NO.: 31158
 Assignment No 4 
 Use of Control Structures and Exception Handling
 
-CREATE TABLE Borrower (
-    Rollno INT,
-    Name VARCHAR(50),
-    Date_of_Issue DATE,
-    Status VARCHAR(50),
-    Bookname VARCHAR(50),
-    PRIMARY KEY (Rollno)
-);
+DECLARE
+    -- Variables to store user input and intermediate calculations
+    v_roll Borrower.Roll%TYPE;
+    v_book_name Borrower.NameofBook%TYPE;
+    v_date_of_issue Borrower.DateofIssue%TYPE;
+    v_status Borrower.Status%TYPE;
+    v_fine_amount NUMBER := 0;
+    v_days NUMBER;
+    v_current_date DATE := SYSDATE;
 
-INSERT INTO Borrower VALUES (1, 'Shardool', '2024-01-24', 'Issued', 'Yogabhyas');
-
-CREATE TABLE Fine (
-    Rollno INT,
-    Rdate DATE,
-    Amt INT,
-    FOREIGN KEY (Rollno) REFERENCES Borrower(Rollno) ON DELETE CASCADE
-);
-
-DELIMITER $$
-
-CREATE PROCEDURE fineCalculator(IN roll INT)
 BEGIN
-    DECLARE issueDate DATE;
-    DECLARE fine INT DEFAULT 0;
-    DECLARE days INT;
+    -- Accept Roll Number and Name of Book from user
+    v_roll := &roll_number;  -- user input for Roll
+    v_book_name := '&book_name';  -- user input for Name of Book
 
-    DECLARE EXIT HANDLER FOR SQLEXCEPTION
-    BEGIN
-        ROLLBACK;
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid roll number or other error';
-    END;
-
-    IF (roll < 0) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid roll number';
-    END IF;
-
-    SELECT Date_of_Issue INTO issueDate
+    -- Fetch the date of issue and status for the specified roll and book name
+    SELECT DateofIssue, Status INTO v_date_of_issue, v_status
     FROM Borrower
-    WHERE Rollno = roll;
+    WHERE Roll = v_roll AND NameofBook = v_book_name;
 
-    SET days = DATEDIFF(CURDATE(), issueDate);
+    -- Calculate the number of days since the date of issue
+    v_days := TRUNC(v_current_date - v_date_of_issue);
 
-    IF (days >= 15 AND days <= 30) THEN
-        SET fine = days * 5;
-    ELSEIF (days > 30) THEN
-        SET fine = days * 50;
+    -- Check the number of days and calculate fine
+    IF v_days BETWEEN 15 AND 30 THEN
+        v_fine_amount := (v_days * 5);
+    ELSIF v_days > 30 THEN
+        v_fine_amount := (30 * 5) + ((v_days - 30) * 50);
+    ELSE
+        v_fine_amount := 0; -- No fine if returned within 15 days
     END IF;
 
+    -- Update the status in Borrower table
     UPDATE Borrower
     SET Status = 'R'
-    WHERE Rollno = roll;
+    WHERE Roll = v_roll AND NameofBook = v_book_name;
 
-    IF (fine IS NOT NULL) THEN
-        INSERT INTO Fine (Rollno, Rdate, Amt) VALUES (roll, CURDATE(), fine);
+    -- If fine amount is greater than 0, insert into Fine table
+    IF v_fine_amount > 0 THEN
+        INSERT INTO Fine (Roll, Date, Amt)
+        VALUES (v_roll, v_current_date, v_fine_amount);
     END IF;
-END $$
 
-DELIMITER ;
+    -- Commit the changes
+    COMMIT;
 
-UPDATE Borrower
-SET Name = 'Shardool', Bookname = 'Atomic Habits'
-WHERE Rollno = 1;
+    -- Output fine amount (for feedback)
+    DBMS_OUTPUT.PUT_LINE('Fine Amount: Rs ' || v_fine_amount);
 
-INSERT INTO Borrower (Rollno, Name, Date_of_Issue, Status, Bookname) VALUES
-(2, 'Ram', '2024-01-15', 'Issued', 'Mahabharata'),
-(3, 'Laxman', '2024-01-18', 'Issued', 'Bhagavad Gita'),
-(4, 'Bharat', '2024-01-20', 'Issued', 'Ramayana'),
-(5, 'Yogya', '2024-01-22', 'Issued', 'Panchatantra'),
-(6, 'Agastya', '2024-01-24', 'Issued', 'Arthashastra');
-
-CALL fineCalculator(1);
-CALL fineCalculator(2);
-CALL fineCalculator(3);
-CALL fineCalculator(4);
-CALL fineCalculator(5);
-CALL fineCalculator(6);
-
-SELECT * FROM Fine;
-+--------+------------+------+
-| Rollno | Rdate      | Amt  |
-+--------+------------+------+
-|      1 | 2024-02-10 |   75 |
-|      2 | 2024-02-05 |  100 |
-|      3 | 2024-02-10 |  150 |
-|      4 | 2024-02-15 |  250 |
-|      5 | 2024-02-20 |    0 |
-|      6 | 2024-02-05 |   50 |
-+--------+------------+------+
-SELECT * FROM Borrower;
-+--------+----------+---------------+----------+---------------+
-| Rollno | Name     | Date_of_Issue | Status   | Bookname      |
-+--------+----------+---------------+----------+---------------+
-|      1 | Shardool | 2024-01-24    | Returned | Yogabhyas     |
-|      2 | Ram      | 2024-01-15    | Returned | Mahabharata   |
-|      3 | Laxman   | 2024-01-10    | Issued   | Bhagavad Gita |
-|      4 | Bharat   | 2024-01-05    | Issued   | Ramayana      |
-|      5 | Yogya    | 2024-02-01    | Issued   | Panchatantra  |
-|      6 | Agastya  | 2024-01-20    | Issued   | Arthashastra  |
-+--------+----------+---------------+----------+---------------+
-
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('No record found for Roll: ' || v_roll || ' and Book: ' || v_book_name);
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An error occurred: ' || SQLERRM);
+        ROLLBACK;  -- Rollback changes in case of error
+END;
+/
