@@ -1,0 +1,90 @@
+Assignment 5
+Name: Shardool Patil
+Roll No. : 31158
+
+mysql> create table stud_marks (name varchar(50), total_marks int);
+Query OK, 0 rows affected (0.03 sec)
+
+INSERT INTO stud_marks (name, total_marks) VALUES ('Akash Gupta', 1000);
+INSERT INTO stud_marks (name, total_marks) VALUES ('Samay Raina', 970);
+INSERT INTO stud_marks (name, total_marks) VALUES ('Madhur Virli', 880);
+INSERT INTO stud_marks (name, total_marks) VALUES ('Maheep Singh', 820);
+INSERT INTO stud_marks (name, total_marks) VALUES ('Abhishek Upamanyu', 1100);
+
+mysql> select * from stud_marks;
++------------------+-------------+
+| name             | total_marks |
++------------------+-------------+
+| Akash Gupta      |        1000 |
+| Samay Raina      |         970 |
+| Madhur Virli     |         880 |
+| Maheep Singh     |         820 |
+| Abhishek Upamanyu|        1100 |
++------------------+-------------+
+5 rows in set (0.00 sec)
+
+mysql> create table Result(roll int primary key auto_increment, name varchar(50), class varchar(20));
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> DELIMITER //
+create function proc_grade(s_name varchar(50), s_totalmarks int)
+    -> returns varchar(20)
+    -> reads sql data
+    -> begin
+    -> declare sclass varchar(20);
+    -> declare m int;
+    -> if s_totalmarks between 990 and 1500 then
+    -> set sclass = "Distinction";
+    -> elseif s_totalmarks between 900 and 989 then
+    -> set sclass = "First Class";
+    -> elseif s_totalmarks between 825 and 899 then
+    -> set sclass = "Higher Second Class";
+    -> else
+    -> set sclass = "No class";
+    -> end if;
+    -> return sclass;
+    -> end//
+Query OK, 0 rows affected (0.01 sec)
+
+
+
+mysql> delimiter //
+mysql> create procedure categorize_students()
+    -> begin
+    -> declare finish int default 0;
+    -> declare s_name varchar(50);
+    -> declare s_marks int;
+    -> declare sclass varchar(20);
+    -> declare cur cursor for select name, total_marks from stud_marks;
+    -> declare continue handler for not found set finish = 1;
+    -> open cur;
+    -> read_loop: loop
+    -> fetch cur into s_name, s_marks;
+    -> if finish = 1 then
+    -> leave read_loop;
+    -> end if;
+    -> set sclass = proc_Grade(s_name, s_marks);
+    -> insert into Result(name, class) values (s_name, sclass);
+    -> end loop;
+    -> close cur;
+    -> end//
+Query OK, 0 rows affected (0.01 sec)
+
+
+mysql> DELIMITER ;
+
+mysql> CALL categorize_students();
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> select * from Result;
++------+--------------------+---------------------+
+| roll | name               | class               |
++------+--------------------+---------------------+
+|    1 | Akash Gupta        | Distinction         |
+|    2 | Samay Raina        | First Class         |
+|    3 | Madhur Virli       | Higher Second Class |
+|    4 | Maheep Singh       | No Category         |
+|    5 | Abhishek Upamanyu  | Distinction         |
++------+--------------------+---------------------+
+5 rows in set (0.00 sec)
+

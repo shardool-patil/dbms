@@ -1,0 +1,37 @@
+Assignment_4
+Shardool Babasaheb Patil
+31158
+
+4-A) PROBLEM STATEMENT: 
+Write a PL/SQL code block to calculate the area of a circle for a value of radius varying from 5 to 9. Store the radius and the corresponding values of the calculated area in an empty table named areas, consisting of two columns, radius and area. 
+create table CircleArea(Radius float,area float); 
+Query OK, 0 rows affected (0.03 sec) 
+mysql> desc CircleArea;
++--------+-------+------+-----+---------+-------+ 
+| Field | Type | Null | Key | Default | Extra | 
++--------+-------+------+-----+---------+-------+ 
+| Radius | float | YES | | NULL | | 
+| area | float | YES | | NULL | | 
++--------+-------+------+-----+---------+-------+ 
+delimiter // 
+mysql> create procedure CalcArea(in radius float) -> begin 
+-> declare Area float 
+-> declare invalidRange condition for sqlstate '45000'; -> if(radius<5) or (radius>9) then 
+-> signal sqlstate '45000' 
+-> set message='Radius range is 5 to 9' 
+-> else 
+-> set Area=3.14159*radius*radius 
+-> insert into areas(Radius,area) values (radius,Area) -> end if 
+-> end // 
+mysql> call CalcArea(5.6); 
+mysql> call CalcArea(9); 
+mysql> call CalcArea(10); 
+ERROR 1644 (45000): Radius in range 5 to 9 
+mysql> select *from CircleArea; 
++--------+-------+ 
+| Radius | area | 
++--------+-------+ 
+| 5.6 | 98.5203 | 
+| 9 | 254.469 | 
++--------+-------+
+

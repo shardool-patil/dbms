@@ -1,0 +1,539 @@
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                                                                        QUERIES USED 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+CREATE TABLE Student (s_id INT PRIMARY KEY,Drive_id INT,T_id INT,s_name VARCHAR(100) NOT NULL,CGPA FLOAT NOT NULL,s_branch VARCHAR(100) NOT NULL,S_dob DAT,FOREIGN KEY (Drive_id) REFERENCES PlacementDrive(Drive_id) ON DELETE CASCADE,FOREIGN KEY (T_id) REFERENCES Training(T_id) ON DELETE CASCADE
+);
+CREATE TABLE PlacementDrive (Drive_id INT PRIMARY KEY,Pcompany_name VARCHAR(100) NOT NULL,package INT NOT NULL,location VARCHAR(100) NOT NULL);
+
+CREATE TABLE Training (T_id INT PRIMARY KEY,Tcompany_name VARCHAR(100) NOT NULL,T_Fee INT NOT NULL,T_year INT NOT NULL);
+
+INSERT INTO Student (s_id, Drive_id, T_id, s_name, CGPA, s_branch, S_dob) VALUES
+(1, 101, 201, 'Purav Singh', 8.6, 'Computer Engineering', '2000-04-15'),
+(2, 102, 202, 'Vivaan Gupta', 6.5, 'Computer Engineering', '1999-08-22'),
+(3, 103, 203, 'Rohan Roshan', 9.3, 'Information Technology', '2001-01-10'),	
+(4, 104, 204, 'Ishaan Gupta', 7.3, 'Information Technology', '2000-03-30'),
+(5, 105, 205, 'Arohi Reddy', 8.7, 'Computer Engineering', '1998-11-19'),
+(6, 106, 206, 'Aryan Dube', 3.4, 'Computer Engineering', '2001-07-07'),
+(7, 107, 207, 'Radhika Menon', 8.6, 'Computer Engineering', '1999-12-03'),
+(8, 108, 208, 'Hrithik Roshan', 6.5, 'Information Technology', '2000-02-14'),
+(9, 109, 209, 'Sara Naik', 9.3, 'Information Technology', '1998-05-25'),
+(10, 110, 210, 'Rohan Yadav', 7.3, 'Computer Engineering', '2001-09-29');
+
+INSERT INTO PlacementDrive (Drive_id, Pcompany_name, package, location) VALUES
+(101, 'Reliance Consultancy Services', 800000, 'Mumbai'),
+(102, 'Mark & Spencer', 750000, 'Chennai'),
+(103, 'Infosys', 900000, 'Bangalore'),
+(104, 'Hindustan Construction', 700000, 'Delhi'),
+(105, 'Cisco', 850000, 'Noida'),
+(106, 'Reliance Industries', 720000, 'Ahmedabad'),
+(107, 'Tetramax', 780000, 'Pune'),
+(108, 'HCL Technologies', 740000, 'Noida'),
+(109, 'DRDO', 910000, 'Bangalore'),
+(110, 'Razorpay', 850000, 'Noida');
+
+INSERT INTO Training (T_id, Tcompany_name, T_Fee, T_year) VALUES
+(201, 'IIIT', 1500, 2022),
+(202, 'Skillshare', 1200, 2021),
+(203, 'Electronics Training Institute', 1600, 2023),
+(204, 'Information Technology Academy', 1100, 2020),
+(205, 'GFG', 1400, 2022),
+(206, 'Chemical Training Institute', 1300, 2021),
+(207, 'Biotech Institute of India', 1550, 2023),
+(208, 'IT Training Institute', 1250, 2020),
+(209, 'Aerospace Training Institute', 1700, 2022),
+(210, 'GFG', 1400, 2023);
+
+
+desc Student;
+
+desc Training;
+
+desc PlacementDrive;
+
+select * from Student;
+
+select * from Training;
+
+select * from PlacementDrive;
+
+select * from Student where (s_branch = 'Computer Engineering' or s_branch = 'Information Technology') AND (s_name like  'A%' or s_name like '%a');
+
+ select  distinct Tcompany_name from Training union select  distinct Pcompany_name from PlacementDrive;
+ 
+ UPDATE  Training T_fee set T_fee = (T_fee + T_fee*0.15) where T_year < 2021;
+ 
+ SELECT T_fee, T_year from Training;
+ 
+ delete from Student where CGPA < 7.3;
+ 
+ select Pcompany_name from PlacementDrive where ( location  = 'Mumbai' or location = 'Pune');
+ SELECT s_name FROM Student WHERE s_id IN (SELECT s_id FROM Training st1 JOIN Training t1 ON st1.T_id = t1.T_id WHERE t1.T_year = 2019 ) OR s_id IN
+ 
+(SELECT s_id FROM Training st2 JOIN Training t2 ON st2.T_id = t2.T_id  WHERE t2.T_year = 2021 );
+
+select CGPA,s_name from Student where CGPA = (select MAX(CGPA) from Student) union select CGPA,s_name from Student where CGPA Between 7.3 and 9.3;
+
+SELECT s.s_name, s.T_id, t.T_Fee FROM Student s JOIN Training t ON s.T_id = t.T_id ORDER BY t.T_Fee DESC;
+
+SELECT pd.Pcompany_name, s.s_name, pd.location, pd.package FROM Student s JOIN PlacementDrive pd ON s.Drive_id = pd.Drive_id WHERE pd.package IN (700000, 800000, 850000);
+
+create view simple_view as select s_name, Drive_id, CGPA,s_branch from Student;
+ 
+select * from simple_view;
+
+ALTER TABLE Student MODIFY COLUMN s_name VARCHAR(100) NOT NULL;
+
+ALTER TABLE Student MODIFY COLUMN CGPA FLOAT NOT NULL;
+
+ALTER TABLE Student MODIFY COLUMN s_branch VARCHAR(100) NOT NULL;
+
+ALTER TABLE Student MODIFY COLUMN S_dob DATE NOT NULL;
+
+CREATE VIEW StudentView AS SELECT * FROM Student;
+
+CREATE VIEW PlacementDriveView AS SELECT * FROM PlacementDrive;
+
+CREATE VIEW TrainingView AS SELECT * FROM Training;
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                                                                        QUERY EXECUTION 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+[TE@fedora ~]$ mysql -h 10.10.14.184 -u te31158 -p
+Enter password:
+ERROR 1045 (28000): Access denied for user 'te31158'@'10.10.10.26' (using password: YES)
+[TE@fedora ~]$ mysql -h 10.10.14.184 -u te31158 -p
+Enter password:
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 643
+Server version: 10.4.19-MariaDB MariaDB Server
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [(none)]> use te31158_db;
+Database changed
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+MariaDB [te31158]> CREATE TABLE Student (s_id INT PRIMARY KEY,Drive_id INT,T_id INT,s_name VARCHAR(100) NOT NULL,CGPA FLOAT NOT NULL,s_branch VARCHAR(100) NOT NULL,S_dob DATE NOT NULL,FOREIGN KEY (Drive_id) REFERENCES PlacementDrive(Drive_id) ON DELETE CASCADE,FOREIGN KEY (T_id) REFERENCES Training(T_id) ON DELETE CASCADE
+);
+Query OK, 0 rows affected (0.189 sec)
+
+MariaDB [te31158_db]> CREATE TABLE PlacementDrive (Drive_id INT PRIMARY KEY,Pcompany_name VARCHAR(100) NOT NULL,package INT NOT NULL,location VARCHAR(100) NOT NULL);
+Query OK, 0 rows affected (0.189 sec)
+
+MariaDB [te31158_db]> CREATE TABLE Training (T_id INT PRIMARY KEY,Tcompany_name VARCHAR(100) NOT NULL,T_Fee INT NOT NULL,T_year INT NOT NULL);
+Query OK, 0 rows affected (0.189 sec)
+
+MariaDB [te31158_db]> show tables;
++----------------------+
+| Tables_in_te31158_db |
++----------------------+
+| PlacementDrive       |
+| Training             |
+| class                |               |
+| Student              |
++----------------------+
+5 rows in set (0.001 sec)
+
+
+MariaDB [te31158_db]> desc Student;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| s_id     | int(11)     | YES  |     | NULL    |       |
+| Drive_id | varchar(20) | YES  |     | NULL    |       |
+| T_id     | int(11)     | YES  |     | NULL    |       |
+| s_name   | varchar(20) | YES  |     | NULL    |       |
+| CGPA     | double      | NO   |     | NULL    |       |
+| s_branch | varchar(30) | YES  |     | NULL    |       |
+| S_dob    | varchar(10) | YES  |     | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+7 rows in set (0.002 sec)
+
+MariaDB [te31158_db]> desc Training;
++---------------+-------------+------+-----+---------+-------+
+| Field         | Type        | Null | Key | Default | Extra |
++---------------+-------------+------+-----+---------+-------+
+| T_id          | int(11)     | NO   | PRI | NULL    |       |
+| Tcompany_name | varchar(30) | YES  |     | NULL    |       |
+| T_fee         | int(11)     | YES  |     | NULL    |       |
+| T_year        | int(11)     | YES  |     | NULL    |       |
++---------------+-------------+------+-----+---------+-------+
+4 rows in set (0.002 sec)
+
+MariaDB [te31158_db]> desc PlacementDrive;
++---------------+-------------+------+-----+---------+-------+
+| Field         | Type        | Null | Key | Default | Extra |
++---------------+-------------+------+-----+---------+-------+
+| Drive_id      | varchar(20) | YES  |     | NULL    |       |
+| Pcompany_name | varchar(30) | YES  |     | NULL    |       |
+| package       | int(11)     | YES  |     | NULL    |       |
+| location      | varchar(20) | YES  |     | NULL    |       |
++---------------+-------------+------+-----+---------+-------+
+4 rows in set (0.002 sec)
+
+MariaDB [te31158_db]> select * from Student;
++------+----------+------+----------------+------+------------------------+------------+
+| s_id | Drive_id | T_id | s_name         | CGPA | s_branch               | S_dob      |
++------+----------+------+----------------+------+------------------------+------------+
+|    1 | 101      |  201 | Purav Singh    |  8.6 | Computer Engineering       | 2000-04-15 |
+|    2 | 102      |  202 | Vivaan Gupta   |  6.5 | Computer Engineering | 1999-08-22 |
+|    3 | 103      |  203 | Rohan Roshan    |  9.3 | Information Technology | 2001-01-10 |
+|    4 | 104      |  204 | Ishaan Gupta   |  7.3 | Information Technology      | 2000-03-30 |
+|    5 | 105      |  205 | Arohi Reddy     |  8.7 | Computer Engineering       | 1998-11-19 |
+|    7 | 107      |  207 | Radhika Menon    |  8.6 | Computer Engineering          | 1999-12-03 |
+|    8 | 108      |  208 | Hrithik Roshan |  6.5 | Information Technology | 2000-02-14 |
+|    9 | 109      |  209 | Sara Naik      |  9.3 | Information Technology  | 1998-05-25 |
+|   10 | 110      |  210 | Rohan Yadav    |  7.3 | Computer Engineering       | 2001-09-29 |
++------+----------+------+----------------+------+------------------------+------------+
+9 rows in set (0.001 sec)
+
+MariaDB [te31158_db]> select * from Training;
++------+--------------------------------+-------+--------+
+| T_id | Tcompany_name                  | T_fee | T_year |
++------+--------------------------------+-------+--------+
+|  201 | IIIT                           |  1500 |   2022 |
+|  202 | Skillshare                     |  1200 |   2021 |
+|  203 | Electronics Training Institute |  1600 |   2023 |
+|  204 | Information Technology Academy      |   165 |   2020 |
+|  205 | GFG                  |  1400 |   2022 |
+|  206 | Chemical Training Institute    |  1300 |   2021 |
+|  207 | Biotech Institute of India     |  1550 |   2023 |
+|  208 | IT Training Institute          |   188 |   2020 |
+|  209 | Aerospace Training Institute   |  1700 |   2022 |
+|  210 | GFG                  |  1400 |   2023 |
++------+--------------------------------+-------+--------+
+10 rows in set (0.001 sec)
+
+MariaDB [te31158_db]> select * from PlacementDrive;
++----------+---------------------------+---------+-----------+
+| Drive_id | Pcompany_name             | package | location  |
++----------+---------------------------+---------+-----------+
+| 101      | Reliance Consultancy Services |  800000 | Mumbai    |
+| 102      | Mark & Spencer           |  750000 | Chennai   |
+| 103      | Infosys                   |  900000 | Bangalore |
+| 104      | Hindustan Construction    |  700000 | Delhi     |
+| 105      | Cisco                     |  850000 | Noida |
+| 106      | Reliance Industries       |  720000 | Ahmedabad |
+| 107      | Tetramax                    |  780000 | Pune      |
+| 108      | HCL Technologies          |  740000 | Noida     |
+| 109      | DRDO                      |  910000 | Bangalore |
+| 110      | Razorpay                     |  850000 | Noida |
++----------+---------------------------+---------+-----------+
+10 rows in set (0.001 sec)
+
+//SECOND QUERY
+MariaDB [te31158_db]> select * from Student where (s_branch = 'Computer Engineering' or s_branch = 'Information Technology') AND (s_name like  'A%' or s_name like '%a');
++------+----------+------+----------------+------+------------------------+------------+
+| s_id | Drive_id | T_id | s_name         | CGPA | s_branch               | S_dob      |
++------+----------+------+----------------+------+------------------------+------------+
+|    1 | 101      |  201 | Purav Singh    |  8.6 | Computer Engineering       | 2000-04-15 |
+|    8 | 108      |  208 | Hrithik Roshan |  6.5 | Information Technology | 2000-02-14 |
++------+----------+------+----------------+------+------------------------+------------+
+2 rows in set (0.002 sec)
+
+//Third QUERY
+MariaDB [te31158_db]> select  distinct Tcompany_name from Training;
++--------------------------------+
+| Tcompany_name                  |
++--------------------------------+
+| IIIT                           |
+| Skillshare                     |
+| Electronics Training Institute |
+| Information Technology Academy      |
+| GFG                  |
+| Chemical Training Institute    |
+| Biotech Institute of India     |
+| IT Training Institute          |
+| Aerospace Training Institute   |
++--------------------------------+
+9 rows in set (0.001 sec)
+
+//THIRD QUERY
+MariaDB [te31158_db]> select  distinct Pcompany_name from PlacementDrive;
++---------------------------+
+| Pcompany_name             |
++---------------------------+
+| Reliance Consultancy Services |
+| Mark & Spencer           |
+| Infosys                   |
+| Hindustan Construction    |
+| Cisco                     |
+| Reliance Industries       |
+| Tetramax                    |
+| HCL Technologies          |
+| DRDO                      |
++---------------------------+
+9 rows in set (0.001 sec)
+
+//FOURTH QUERY
+
+MariaDB [te31158_db]> UPDATE  Training T_fee set T_fee = (T_fee + T_fee*0.15) where T_year < 2021;
+Query OK, 2 rows affected (0.037 sec)
+Rows matched: 2  Changed: 2  Warnings: 0
+
+MariaDB [te31158_db]> SELECT T_fee, T_year from Training;
++-------+--------+
+| T_fee | T_year |
++-------+--------+
+|  1500 |   2022 |
+|  1200 |   2021 |
+|  1600 |   2023 |
+|   190 |   2020 |
+|  1400 |   2022 |
+|  1300 |   2021 |
+|  1550 |   2023 |
+|   216 |   2020 |
+|  1700 |   2022 |
+|  1400 |   2023 |
++-------+--------+
+10 rows in set (0.001 sec)
+
+//FIFTH QUERY
+MariaDB [te31158_db]> delete from Student where CGPA < 7.3;
+Query OK, 2 rows affected (0.024 sec)
+
+//SIXTH QUERY
+
+MariaDB [te31158_db]> select Pcompany_name from PlacementDrive where ( location  = 'Mumbai' or location = 'Pune');
++---------------------------+
+| Pcompany_name             |
++---------------------------+
+| Reliance Consultancy Services |
+| Tetramax                    |
++---------------------------+
+2 rows in set (0.001 sec)
+
+//SEVENTH QUERY
+
+MariaDB [te31158_db]> SELECT s_name FROM Student WHERE s_id IN (SELECT s_id FROM Training st1 JOIN Training t1 ON st1.T_id = t1.T_id WHERE t1.T_year = 2019 ) OR s_id IN(SELECT s_id FROM Training st2 JOIN Training t2 ON st2.T_id = t2.T_id  WHERE t2.T_year = 2021 );
++--------------+
+| s_name       |
++--------------+
+| Purav Singh  |
+| Rohan Roshan  |
+| Ishaan Gupta |
+| Arohi Reddy   |
+| Radhika Menon  |
+| Sara Naik    |
+| Rohan Yadav  |
++--------------+
+7 rows in set (0.002 sec)
+
+//Eighth QUERY
+MariaDB [te31158_db]> select CGPA,s_name from Student where CGPA = (select MAX(CGPA) from Student);
++------+-------------+
+| CGPA | s_name      |
++------+-------------+
+|  9.3 | Rohan Roshan |
+|  9.3 | Sara Naik   |
++------+-------------+
+2 rows in set (0.001 sec)
+
+//EIGHT QUERY
+MariaDB [te31158_db]> select CGPA,s_name from Student where CGPA Between 7.3 and 9.3;
++------+--------------+
+| CGPA | s_name       |
++------+--------------+
+|  8.6 | Purav Singh  |
+|  9.3 | Rohan Roshan  |
+|  7.3 | Ishaan Gupta |
+|  8.7 | Arohi Reddy   |
+|  8.6 | Radhika Menon  |
+|  9.3 | Sara Naik    |
+|  7.3 | Rohan Yadav  |
++------+--------------+
+7 rows in set (0.001 sec)
+
+//EIGHT QUERY
+MariaDB [te31158_db]> select CGPA,s_name from Student where CGPA = (select MAX(CGPA) from Student) union select CGPA,s_name from Student where CGPA Between 7.3 and 9.3;
++------+--------------+
+| CGPA | s_name       |
++------+--------------+
+|  9.3 | Rohan Roshan  |
+|  9.3 | Sara Naik    |
+|  8.6 | Purav Singh  |
+|  7.3 | Ishaan Gupta |
+|  8.7 | Arohi Reddy   |
+|  8.6 | Radhika Menon  |
+|  7.3 | Rohan Yadav  |
++------+--------------+
+7 rows in set (0.002 sec)
+
+//NINTH QUERY
+MariaDB [te31158_db]> SELECT s.s_name, s.T_id, t.T_Fee FROM Student s JOIN Training t ON s.T_id = t.T_id ORDER BY t.T_Fee DESC;
++--------------+------+-------+
+| s_name       | T_id | T_Fee |
++--------------+------+-------+
+| Sara Naik    |  209 |  1700 |
+| Rohan Roshan  |  203 |  1600 |
+| Radhika Menon  |  207 |  1550 |
+| Purav Singh  |  201 |  1500 |
+| Rohan Yadav  |  210 |  1400 |
+| Arohi Reddy   |  205 |  1400 |
+| Ishaan Gupta |  204 |   190 |
++--------------+------+-------+
+7 rows in set (0.001 sec)
+
+//TENTH QUERY
+MariaDB [te31158_db]> SELECT pd.Pcompany_name, s.s_name, pd.location, pd.package FROM Student s JOIN PlacementDrive pd ON s.Drive_id = pd.Drive_id WHERE pd.package IN (700000, 800000, 850000);
++---------------------------+--------------+-----------+---------+
+| Pcompany_name             | s_name       | location  | package |
++---------------------------+--------------+-----------+---------+
+| Reliance Consultancy Services | Purav Singh  | Mumbai    |  800000 |
+| Hindustan Construction    | Ishaan Gupta | Delhi     |  700000 |
+| Cisco                     | Arohi Reddy   | Noida |  850000 |
+| Razorpay                     | Rohan Yadav  | Noida |  850000 |
++---------------------------+--------------+-----------+---------+
+4 rows in set (0.001 sec)
+
+//CREATING A SIMPLE VIEW
+MariaDB [te31158_db]> create view simple_view as select s_name, Drive_id, CGPA,s_branch from Student;
+Query OK, 0 rows affected (0.032 sec)
+
+MariaDB [te31158_db]> select * from simple_view;
++--------------+----------+------+------------------------+
+| s_name       | Drive_id | CGPA | s_branch               |
++--------------+----------+------+------------------------+
+| Purav Singh  | 101      |  8.6 | Computer Engineering       |
+| Rohan Roshan  | 103      |  9.3 | Information Technology |
+| Ishaan Gupta | 104      |  7.3 | Information Technology      |
+| Arohi Reddy   | 105      |  8.7 | Computer Engineering       |
+| Radhika Menon  | 107      |  8.6 | Computer Engineering          |
+| Sara Naik    | 109      |  9.3 | Information Technology  |
+| Rohan Yadav  | 110      |  7.3 | Computer Engineering       |
++--------------+----------+------+------------------------+
+7 rows in set (0.002 sec)
+
+//CREATING A INDEX
+MariaDB [te31158_db]> create index std_index on Student(T_id);
+Query OK, 0 rows affected (0.218 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [te31158_db]> CREATE INDEX composite_idx ON Student(s_id, Drive_id);
+Query OK, 0 rows affected (0.159 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [te31158_db]> CREATE UNIQUE  INDEX unique_idx ON Student(s_dob);
+Query OK, 0 rows affected (0.406 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [te31158_db]> show index from Student;
++---------+------------+---------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| Table   | Non_unique | Key_name      | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
++---------+------------+---------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| Student |          0 | unique_idx    |            1 | S_dob       | A         |           7 |     NULL | NULL   |      | BTREE      |         |               |
+| Student |          1 | std_index     |            1 | T_id        | A         |           7 |     NULL | NULL   | YES  | BTREE      |         |               |
+| Student |          1 | composite_idx |            1 | s_id        | A         |           7 |     NULL | NULL   | YES  | BTREE      |         |               |
+| Student |          1 | composite_idx |            2 | Drive_id    | A         |           7 |     NULL | NULL   | YES  | BTREE      |         |               |
++---------+------------+---------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+4 rows in set (0.001 sec)
+
+
+MariaDB [te31158_db]> show index from Student;
++---------+------------+-----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| Table   | Non_unique | Key_name  | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
++---------+------------+-----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| Student |          1 | std_index |            1 | T_id        | A         |           7 |     NULL | NULL   | YES  | BTREE      |         |               |
++---------+------------+-----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+1 row in set (0.002 sec)
+
+//ADDING INTIGRITY CONSTRAINS POST CREATION 
+
+MariaDB [te31158_db]> ALTER TABLE Student MODIFY COLUMN S_dob DATE NOT NULL;
+Query OK, 7 rows affected (0.833 sec)              
+Records: 7  Duplicates: 0  Warnings: 0
+
+//MAKING SYNONYM USING VIEW TO COMPLETELY DUPLICATE A TABLE
+MariaDB [te31158_db]> CREATE VIEW StudentView AS SELECT * FROM Student;
+Query OK, 0 rows affected (0.030 sec)
+
+MariaDB [te31158_db]> CREATE VIEW PlacementDriveView AS SELECT * FROM PlacementDrive;
+Query OK, 0 rows affected (0.075 sec)
+
+MariaDB [te31158_db]> CREATE VIEW TrainingView AS SELECT * FROM Training;
+Query OK, 0 rows affected (0.037 sec)
+
+MariaDB [te31158_db]> SELECT * FROM StudentView;
++------+----------+------+--------------+------+------------------------+------------+
+| s_id | Drive_id | T_id | s_name       | CGPA | s_branch               | S_dob      |
++------+----------+------+--------------+------+------------------------+------------+
+|    1 | 101      |  201 | Purav Singh  |  8.6 | Computer Engineering       | 2000-04-15 |
+|    3 | 103      |  203 | Rohan Roshan  |  9.3 | Information Technology | 2001-01-10 |
+|    4 | 104      |  204 | Ishaan Gupta |  7.3 | Information Technology      | 2000-03-30 |
+|    5 | 105      |  205 | Arohi Reddy   |  8.7 | Computer Engineering       | 1998-11-19 |
+|    7 | 107      |  207 | Radhika Menon  |  8.6 | Computer Engineering          | 1999-12-03 |
+|    9 | 109      |  209 | Sara Naik    |  9.3 | Information Technology  | 1998-05-25 |
+|   10 | 110      |  210 | Rohan Yadav  |  7.3 | Computer Engineering       | 2001-09-29 |
++------+----------+------+--------------+------+------------------------+------------+
+7 rows in set (0.001 sec)
+
+MariaDB [te31158_db]> SELECT * FROM PlacementDriveView;
++----------+---------------------------+---------+-----------+
+| Drive_id | Pcompany_name             | package | location  |
++----------+---------------------------+---------+-----------+
+| 101      | Reliance Consultancy Services |  800000 | Mumbai    |
+| 102      | Mark & Spencer           |  750000 | Chennai   |
+| 103      | Infosys                   |  900000 | Bangalore |
+| 104      | Hindustan Construction    |  700000 | Delhi     |
+| 105      | Cisco                     |  850000 | Noida |
+| 106      | Reliance Industries       |  720000 | Ahmedabad |
+| 107      | Tetramax                    |  780000 | Pune      |
+| 108      | HCL Technologies          |  740000 | Noida     |
+| 109      | DRDO                      |  910000 | Bangalore |
+| 110      | Razorpay                     |  850000 | Noida |
++----------+---------------------------+---------+-----------+
+10 rows in set (0.001 sec)
+
+MariaDB [te31158_db]> SELECT * FROM TrainingView;
++------+--------------------------------+-------+--------+
+| T_id | Tcompany_name                  | T_Fee | T_year |
++------+--------------------------------+-------+--------+
+|  201 | IIIT                           |  1500 |   2022 |
+|  202 | Skillshare                     |  1200 |   2021 |
+|  203 | Electronics Training Institute |  1600 |   2023 |
+|  204 | Information Technology Academy      |   190 |   2020 |
+|  205 | GFG                  |  1400 |   2022 |
+|  206 | Chemical Training Institute    |  1300 |   2021 |
+|  207 | Biotech Institute of India     |  1550 |   2023 |
+|  208 | IT Training Institute          |   216 |   2020 |
+|  209 | Aerospace Training Institute   |  1700 |   2022 |
+|  210 | GFG                  |  1400 |   2023 |
++------+--------------------------------+-------+--------+
+10 rows in set (0.001 sec)
+
+//SEQUENCE 
+MariaDB [te31158_db]> alter table PlacementDrive drop PIRMARY KEY;
+Query OK, 10 rows affected (0.665 sec)             
+Records: 10  Duplicates: 0  Warnings: 0
+
+
+MariaDB [te31158_db]> alter table PlacementDrive add column random_id integer AUTO_INCREMENT PRIMARY KEY;
+Query OK, 0 rows affected (0.468 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [te31158_db]> select * from PlacementDrive;
++----------+---------------------------+---------+-----------+-----------+
+| Drive_id | Pcompany_name             | package | location  | random_id |
++----------+---------------------------+---------+-----------+-----------+
+| 101      | Reliance Consultancy Services |  800000 | Mumbai    |         1 |
+| 102      | Mark & Spencer           |  750000 | Chennai   |         2 |
+| 103      | Infosys                   |  900000 | Bangalore |         3 |
+| 104      | Hindustan Construction    |  700000 | Delhi     |         4 |
+| 105      | Cisco                     |  850000 | Noida |         5 |
+| 106      | Reliance Industries       |  720000 | Ahmedabad |         6 |
+| 107      | Tetramax                    |  780000 | Pune      |         7 |
+| 108      | HCL Technologies          |  740000 | Noida     |         8 |
+| 109      | DRDO                      |  910000 | Bangalore |         9 |
+| 110      | Razorpay                     |  850000 | Noida |        10 |
++----------+---------------------------+---------+-----------+-----------+
+10 rows in set (0.001 sec)
+
+
+
+
+
+

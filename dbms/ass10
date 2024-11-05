@@ -1,0 +1,168 @@
+Assignment 10
+Shardool Babasaheb Patil
+31158 M1
+
+
+
+1. Display only title and author field of all documents:
+
+db.SuperheroComicBooks.find({}, { title: 1, author: 1, _id: 0 });
+
+[
+  { "title": "Batman", "author": "Bob Kane" },
+  { "title": "Wonder Woman", "author": "William Moulton Marston" },
+  { "title": "Iron Man", "author": "Stan Lee" },
+  { "title": "Spider-Man", "author": "Stan Lee" }
+]
+
+
+
+2. Find the comic book where publisher is "Marvel Comics":
+
+db.SuperheroComicBooks.find({ publisher: "Marvel Comics" });
+
+[
+  {
+    "title": "Iron Man",
+    "genre": "Superhero",
+    "author": "Stan Lee",
+    "publisher": "Marvel Comics",
+    "price": 275,
+    "issue": 1,
+    "characters": [ "Tony Stark", "Pepper Potts" ]
+  },
+  {
+    "title": "Spider-Man",
+    "author": "Stan Lee",
+    "publisher": "Marvel Comics",
+    "price": 250,
+    "issue": 1,
+    "year": 1962,
+    "characters": [ "Peter Parker", "Mary Jane Watson", "Green Goblin" ]
+  }
+]
+
+
+
+
+3. Find the comic book where "Joker" is a character:
+
+db.SuperheroComicBooks.find({ characters: "Joker" });
+
+[
+  {
+    "title": "Batman",
+    "genre": "Superhero",
+    "author": "Bob Kane",
+    "publisher": "DC Comics",
+    "price": 300,
+    "issue": 1,
+    "characters": [ "Bruce Wayne", "Alfred Pennyworth", "Joker" ]
+  }
+]
+
+
+
+
+
+4. Calculate the total price of all comic books:
+
+db.SuperheroComicBooks.aggregate([
+  { $group: { _id: null, totalPrice: { $sum: "$price" } } }
+]);
+
+[
+  { "totalPrice": 1175 }
+]
+ 
+
+
+
+5. Count the number of comic books per publisher:
+
+db.SuperheroComicBooks.aggregate([
+  { $group: { _id: "$publisher", count: { $sum: 1 } } }
+]);
+
+
+[
+  { "_id": "Marvel Comics", "count": 2 },
+  { "_id": "DC Comics", "count": 2 }
+]
+
+
+
+
+6. List all characters and the number of comic books they appear in:
+
+db.SuperheroComicBooks.aggregate([
+  { $unwind: "$characters" },
+  { $group: { _id: "$characters", comicCount: { $sum: 1 } } }
+]);
+
+[
+  { "_id": "Bruce Wayne", "comicCount": 1 },
+  { "_id": "Tony Stark", "comicCount": 2 },
+  { "_id": "Joker", "comicCount": 1 }
+]
+
+
+
+
+
+7. Calculate the average price of comic books by genre:
+
+db.SuperheroComicBooks.aggregate([
+  { $group: { _id: "$genre", avgPrice: { $avg: "$price" } } }
+]);
+
+[
+  { "_id": "Superhero", "avgPrice": 308.33 }
+]
+
+
+
+
+8. Find the top 3 most expensive comic books:
+
+db.SuperheroComicBooks.find().sort({ price: -1 }).limit(3);
+
+
+[
+  { "title": "Wonder Woman", "price": 350 },
+  { "title": "Batman", "price": 300 },
+  { "title": "Iron Man", "price": 275 }
+]
+
+
+
+
+
+9. Find the total number of comic books published by each author:
+
+db.SuperheroComicBooks.aggregate([
+  { $group: { _id: "$author", totalComics: { $sum: 1 } } }
+]);
+
+[
+  { "_id": "Stan Lee", "totalComics": 2 },
+  { "_id": "Bob Kane", "totalComics": 1 }
+]
+
+
+
+
+10. Calculate the total number of characters across all comic books:
+
+db.SuperheroComicBooks.aggregate([
+  { $unwind: "$characters" },
+  { $group: { _id: null, totalCharacters: { $sum: 1 } } }
+]);
+
+
+[
+  { "totalCharacters": 10 }
+]
+
+
+

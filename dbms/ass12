@@ -1,0 +1,125 @@
+// Assignment No: 12
+// Name: Shardool Babasaheb Patil
+// Roll No.: 31158
+
+
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
+import org.bson.Document;
+import java.util.Scanner;
+
+public class SuperheroComicBooksMongo {
+    public static void main(String[] args) {
+        try {
+            // Connecting to MongoDB
+            MongoClient mclient = new MongoClient(new MongoClientURI("mongodb://te31157:te31157@10.10.13.97:27017/te31157_db"));
+            MongoDatabase db = mclient.getDatabase("te31157_db");
+            MongoCollection<Document> col = db.getCollection("SuperheroComicBooks");
+
+            Scanner sc = new Scanner(System.in);
+            int choice;
+            String title, author, publisher, date;
+            int year, issue;
+            double price;
+
+            while (true) {
+                // Menu options
+                System.out.println("1. Insert\n2. Delete\n3. Update\n4. Display\n5. Exit");
+                System.out.println("Enter choice: ");
+                choice = sc.nextInt();
+
+                switch (choice) {
+                    case 1:
+                        // Insert a new comic book
+                        System.out.println("Title: ");
+                        sc.nextLine();
+                        title = sc.nextLine();
+                        System.out.println("Author: ");
+                        author = sc.nextLine();
+                        System.out.println("Publisher: ");
+                        publisher = sc.nextLine();
+                        System.out.println("Year of Publication: ");
+                        year = sc.nextInt();
+                        System.out.println("Issue Number: ");
+                        issue = sc.nextInt();
+                        System.out.println("Price: ");
+                        price = sc.nextDouble();
+
+                        Document doc = new Document();
+                        doc.append("title", title);
+                        doc.append("author", author);
+                        doc.append("publisher", publisher);
+                        doc.append("year", year);
+                        doc.append("issue", issue);
+                        doc.append("price", price);
+
+                        col.insertOne(doc);
+                        System.out.println("Comic book inserted successfully!\n");
+                        break;
+
+                    case 2:
+                        // Delete a comic book by title
+                        System.out.println("Title of comic book to delete: ");
+                        sc.nextLine(); // Consume newline
+                        title = sc.nextLine();
+                        col.deleteOne(Filters.eq("title", title));
+                        System.out.println("Comic book deleted successfully!\n");
+                        break;
+
+                    case 3:
+                        // Update a comic book by title
+                        System.out.println("Title of comic book to update: ");
+                        sc.nextLine(); // Consume newline
+                        title = sc.nextLine();
+                        System.out.println("Updated Author: ");
+                        author = sc.nextLine();
+                        System.out.println("Updated Publisher: ");
+                        publisher = sc.nextLine();
+                        System.out.println("Updated Year of Publication: ");
+                        year = sc.nextInt();
+                        System.out.println("Updated Issue Number: ");
+                        issue = sc.nextInt();
+                        System.out.println("Updated Price: ");
+                        price = sc.nextDouble();
+
+                        Document updatedDoc = new Document();
+                        updatedDoc.append("title", title);
+                        updatedDoc.append("author", author);
+                        updatedDoc.append("publisher", publisher);
+                        updatedDoc.append("year", year);
+                        updatedDoc.append("issue", issue);
+                        updatedDoc.append("price", price);
+
+                        col.replaceOne(Filters.eq("title", title), updatedDoc);
+                        System.out.println("Comic book updated successfully!\n");
+                        break;
+
+                    case 4:
+                        // Display all comic books
+                        System.out.println("Displaying all comic books:");
+                        for (Document docComic : col.find()) {
+                            System.out.println(docComic.toJson());
+                        }
+                        break;
+
+                    case 5:
+                        // Exit the program
+                        System.out.println("Exiting...");
+                        mclient.close();
+                        sc.close();
+                        System.exit(0);
+
+                    default:
+                        System.out.println("Invalid choice, please try again.\n");
+                        break;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+}
+

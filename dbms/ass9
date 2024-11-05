@@ -1,0 +1,338 @@
+Assignment 9
+Shardool Babasaheb Patil
+31158 M1
+
+
+Problem Statement:-
+Design and Develop MongoDB Queries using CRUD operations (Use CRUD operations, SAVE method, logical operators, etc.).
+
+1. Find all comic books by a specific author=
+db.SuperheroComicBooks.find({ author: "Stan Lee" }).toArray()
+
+Output:
+[
+  {
+    "_id": ObjectId("64d5c0ee1d1c3e45d25a7a21"),
+    "title": "Spider-Man",
+    "author": "Stan Lee",
+    "publisher": "Marvel",
+    "price": 15,
+    "issue": "1",
+    "characters": ["Spider-Man", "Green Goblin"]
+  },
+  {
+    "_id": ObjectId("64d5c0ee1d1c3e45d25a7a22"),
+    "title": "Fantastic Four",
+    "author": "Stan Lee",
+    "publisher": "Marvel",
+    "price": 20,
+    "issue": "1",
+    "characters": ["Mr. Fantastic", "Invisible Woman"]
+  }
+]
+
+2. Find comic books published by a specific publisher
+db.SuperheroComicBooks.find({ publisher: "DC Comics" }).toArray()
+
+Output:
+[
+  {
+    "_id": ObjectId("64d5c0ee1d1c3e45d25a7a23"),
+    "title": "Batman",
+    "author": "Bob Kane",
+    "publisher": "DC Comics",
+    "price": 18,
+    "issue": "1",
+    "characters": ["Batman", "Joker"]
+  },
+  {
+    "_id": ObjectId("64d5c0ee1d1c3e45d25a7a24"),
+    "title": "Wonder Woman",
+    "author": "William Moulton Marston",
+    "publisher": "DC Comics",
+    "price": 22,
+    "issue": "1",
+    "characters": ["Wonder Woman"]
+  }
+]
+
+
+3. Count the total number of comic books in the collection
+db.SuperheroComicBooks.countDocuments()
+
+Output:
+10
+
+
+4. Find all comic books with a specific character
+db.SuperheroComicBooks.find({ characters: "Spider-Man" }).toArray()
+
+Output:
+[
+  {
+    "_id": ObjectId("64d5c0ee1d1c3e45d25a7a21"),
+    "title": "Spider-Man",
+    "author": "Stan Lee",
+    "publisher": "Marvel",
+    "price": 15,
+    "issue": "1",
+    "characters": ["Spider-Man", "Green Goblin"]
+  }
+]
+
+5. Get comic books with a price less than a specified amount
+db.SuperheroComicBooks.find({ price: { $lt: 20 } }).toArray()
+
+Output:
+[
+  {
+    "_id": ObjectId("64d5c0ee1d1c3e45d25a7a21"),
+    "title": "Spider-Man",
+    "author": "Stan Lee",
+    "publisher": "Marvel",
+    "price": 15,
+    "issue": "1",
+    "characters": ["Spider-Man", "Green Goblin"]
+  },
+  {
+    "_id": ObjectId("64d5c0ee1d1c3e45d25a7a23"),
+    "title": "Batman",
+    "author": "Bob Kane",
+    "publisher": "DC Comics",
+    "price": 18,
+    "issue": "1",
+    "characters": ["Batman", "Joker"]
+  }
+]
+
+
+6. Sort comic books by price in ascending order
+db.SuperheroComicBooks.find().sort({ price: 1 }).toArray()
+
+Output:
+[
+  {
+    "_id": ObjectId("64d5c0ee1d1c3e45d25a7a21"),
+    "title": "Spider-Man",
+    "author": "Stan Lee",
+    "publisher": "Marvel",
+    "price": 15,
+    "issue": "1",
+    "characters": ["Spider-Man", "Green Goblin"]
+  },
+  {
+    "_id": ObjectId("64d5c0ee1d1c3e45d25a7a23"),
+    "title": "Batman",
+    "author": "Bob Kane",
+    "publisher": "DC Comics",
+    "price": 18,
+    "issue": "1",
+    "characters": ["Batman", "Joker"]
+  },
+  {
+    "_id": ObjectId("64d5c0ee1d1c3e45d25a7a22"),
+    "title": "Fantastic Four",
+    "author": "Stan Lee",
+    "publisher": "Marvel",
+    "price": 20,
+    "issue": "1",
+    "characters": ["Mr. Fantastic", "Invisible Woman"]
+  }
+]
+
+7. Find comic books with a specific issue number
+db.SuperheroComicBooks.find({ issue: "1" }).toArray()
+
+Output:
+[
+  {
+    "_id": ObjectId("64d5c0ee1d1c3e45d25a7a21"),
+    "title": "Spider-Man",
+    "author": "Stan Lee",
+    "publisher": "Marvel",
+    "price": 15,
+    "issue": "1",
+    "characters": ["Spider-Man", "Green Goblin"]
+  },
+  {
+    "_id": ObjectId("64d5c0ee1d1c3e45d25a7a23"),
+    "title": "Batman",
+    "author": "Bob Kane",
+    "publisher": "DC Comics",
+    "price": 18,
+    "issue": "1",
+    "characters": ["Batman", "Joker"]
+  }
+]
+8. Update the price of a specific comic book
+db.SuperheroComicBooks.updateOne(
+    { title: "Spider-Man" },
+    { $set: { price: 17 } }
+)
+
+Output:
+{ acknowledged: true, matchedCount: 1, modifiedCount: 1 }
+
+
+9. Delete a comic book by title
+db.SuperheroComicBooks.deleteOne({ title: "Wonder Woman" })
+
+Output:
+{ acknowledged: true, deletedCount: 1 }
+
+
+10. Find comic books with multiple characters
+db.SuperheroComicBooks.find({ characters: { $all: ["Batman", "Joker"] } }).toArray()
+
+
+Output:
+[
+  {
+    "_id": ObjectId("64d5c0ee1d1c3e45d25a7a23"),
+    "title": "Batman",
+    "author": "Bob Kane",
+    "publisher": "DC Comics",
+    "price": 18,
+    "issue": "1",
+    "characters": ["Batman", "Joker"]
+  }
+]
+
+
+11. Find comic books with a price greater than a specified amount
+db.SuperheroComicBooks.find({ price: { $gt: 20 } }).toArray()
+
+
+Output:
+[]
+
+
+12. Find all unique authors in the collection
+db.SuperheroComicBooks.distinct("author")
+
+Output:
+["Stan Lee", "Bob Kane", "William Moulton Marston"]
+
+
+13. Find comic books by multiple authors
+db.SuperheroComicBooks.find({ author: { $in: ["Stan Lee", "Bob Kane"] } }).toArray()
+
+Output:
+[
+  {
+    "_id": ObjectId("64d5c0ee1d1c3e45d25a7a21"),
+    "title": "Spider-Man",
+    "author": "Stan Lee",
+    "publisher": "Marvel",
+    "price": 15,
+    "issue": "1",
+    "characters": ["Spider-Man", "Green Goblin"]
+  },
+  {
+    "_id": ObjectId("64d5c0ee1d1c3e45d25a7a23"),
+    "title": "Batman",
+    "author": "Bob Kane",
+    "publisher": "DC Comics",
+    "price": 18,
+    "issue": "1",
+    "characters": ["Batman", "Joker"]
+  }
+]
+
+
+14. Count comic books per publisher
+db.SuperheroComicBooks.aggregate([
+    { $group: { _id: "$publisher", count: { $sum: 1 } } }
+])
+
+Output:
+[
+  { "_id": "Marvel", "count": 5 },
+  { "_id": "DC Comics", "count": 3 }
+]
+
+
+15. Find the most expensive comic book
+db.SuperheroComicBooks.find().sort({ price: -1 }).limit(1)
+
+Output:
+[
+  {
+    "_id": ObjectId("64d5c0ee1d1c3e45d25a7a25"),
+    "title": "Avengers",
+    "author": "Stan Lee",
+    "publisher": "Marvel",
+    "price": 25,
+    "issue": "1",
+    "characters": ["Iron Man", "Thor"]
+  }
+]
+
+
+16. Find comic books by price range
+db.SuperheroComicBooks.find({ price: { $gte: 15, $lte: 20 } }).toArray()
+
+Output:
+[
+  {
+    "_id": ObjectId("64d5c0ee1d1c3e45d25a7a21"),
+    "title": "Spider-Man",
+    "author": "Stan Lee",
+    "publisher": "Marvel",
+    "price": 15,
+    "issue": "1",
+    "characters": ["Spider-Man", "Green Goblin"]
+  },
+  {
+    "_id": ObjectId("64d5c0ee1d1c3e45d25a7a23"),
+    "title": "Batman",
+    "author": "Bob Kane",
+    "publisher": "DC Comics",
+    "price": 18,
+    "issue": "1",
+    "characters": ["Batman", "Joker"]
+  }
+]
+
+
+17. Find comic books by character and sort by price
+db.SuperheroComicBooks.find({ characters: "Batman" }).sort({ price: 1 }).toArray()
+
+Output:
+[
+  {
+    "_id": ObjectId("64d5c0ee1d1c3e45d25a7a23"),
+    "title": "Batman",
+    "author": "Bob Kane",
+    "publisher": "DC Comics",
+    "price": 18,
+    "issue": "1",
+    "characters": ["Batman", "Joker"]
+  }
+]
+
+
+18. Update multiple comic books at once
+db.SuperheroComicBooks.updateMany(
+    { publisher: "Marvel" },
+    { $set: { publisher: "Marvel Comics" } }
+)
+
+Output:
+{ acknowledged: true, matchedCount: 5, modifiedCount: 5 }
+
+
+19. Find comic books published after a certain year (assuming you have a year field)
+db.SuperheroComicBooks.find({ year: { $gt: 2020 } }).toArray()
+
+
+Output:
+[]
+
+
+20. Delete all comic books from a specific publisher
+db.SuperheroComicBooks.deleteMany({ publisher: "DC Comics" })
+
+
+Output:
+{ acknowledged: true, deletedCount: 3 }

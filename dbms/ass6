@@ -1,0 +1,59 @@
+Assignment_6
+Roll no:- 31158
+
+//The tables created to store the old as well as new customers
+CREATE TABLE cust_new (
+    cust_id INT PRIMARY KEY,
+    cust_name VARCHAR(100)
+);
+
+CREATE TABLE cust_old (
+    cust_id INT PRIMARY KEY,
+    cust_name VARCHAR(100)
+);
+
+INSERT INTO cust_new (cust_id, cust_name) VALUES (1, 'Arjuna');
+INSERT INTO cust_new (cust_id, cust_name) VALUES (2, 'Krishna');
+INSERT INTO cust_new (cust_id, cust_name) VALUES (3, 'Sita');
+INSERT INTO cust_new (cust_id, cust_name) VALUES (4, 'Durga');
+
+INSERT INTO cust_old (cust_id, cust_name) VALUES (3, 'Sita');
+INSERT INTO cust_old (cust_id, cust_name) VALUES (5, 'Lakshmi');
+
+DELIMITER //
+
+//Procedure to merge customers
+CREATE PROCEDURE merge_customers()
+BEGIN
+    DECLARE v_cust_id INT;
+    DECLARE v_cust_name VARCHAR(100);
+    
+    DECLARE done INT DEFAULT 0;
+    
+    DECLARE cust_cursor CURSOR FOR
+        SELECT cust_id, cust_name FROM cust_new;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+    OPEN cust_cursor;
+
+    read_loop: LOOP
+        FETCH cust_cursor INTO v_cust_id, v_cust_name;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+
+        INSERT IGNORE INTO cust_old (cust_id, cust_name)
+        VALUES (v_cust_id, v_cust_name);
+    END LOOP;
+
+    CLOSE cust_cursor;
+
+END //
+
+DELIMITER ;
+
+CALL merge_customers();
+
+SELECT * FROM cust_old;
+

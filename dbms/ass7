@@ -1,0 +1,78 @@
+Assignment_7 
+Name:- Shardool Babasaheb Patil 
+Roll no:- 31158 
+
+CREATE TABLE Library (
+    BookID INT PRIMARY KEY,
+    Title VARCHAR(255),
+    Author VARCHAR(255),
+    PublishedYear INT,
+    Status VARCHAR(20)
+);
+
+CREATE TABLE Library_Audit (
+    AuditID INT AUTO_INCREMENT PRIMARY KEY,
+    BookID INT,
+    Title VARCHAR(255),
+    Author VARCHAR(255),
+    PublishedYear INT,
+    Status VARCHAR(20),
+    OperationType VARCHAR(10),
+    OperationTimestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO Library (BookID, Title, Author, PublishedYear, Status) VALUES 
+(1, 'Ramayana', 'Valmiki', 1995, 'Available'), 
+(2, 'Mahabharata', 'Vyasa', 2001, 'Checked Out'), 
+(3, 'Charak Samhita', 'Charaka', 1998, 'Available'), 
+(4, 'Bhagavad Gita', 'Vyasa', 2010, 'Available');
+
+DELIMITER //
+
+CREATE TRIGGER before_library_insert 
+BEFORE INSERT ON Library 
+FOR EACH ROW 
+BEGIN
+    INSERT INTO Library_Audit (BookID, Title, Author, PublishedYear, Status, OperationType) 
+    VALUES (NEW.BookID, NEW.Title, NEW.Author, NEW.PublishedYear, NEW.Status, 'INSERT');
+END; //
+
+CREATE TRIGGER before_library_update 
+BEFORE UPDATE ON Library 
+FOR EACH ROW 
+BEGIN
+    INSERT INTO Library_Audit (BookID, Title, Author, PublishedYear, Status, OperationType) 
+    VALUES (OLD.BookID, OLD.Title, OLD.Author, OLD.PublishedYear, OLD.Status, 'UPDATE');
+END; //
+
+CREATE TRIGGER before_library_delete 
+BEFORE DELETE ON Library 
+FOR EACH ROW 
+BEGIN
+    INSERT INTO Library_Audit (BookID, Title, Author, PublishedYear, Status, OperationType) 
+    VALUES (OLD.BookID, OLD.Title, OLD.Author, OLD.PublishedYear, OLD.Status, 'DELETE');
+END; //
+
+CREATE TRIGGER after_library_insert 
+AFTER INSERT ON Library 
+FOR EACH ROW 
+BEGIN
+END; //
+
+CREATE TRIGGER after_library_update 
+AFTER UPDATE ON Library 
+FOR EACH ROW 
+BEGIN
+END; //
+
+CREATE TRIGGER after_library_delete 
+AFTER DELETE ON Library 
+FOR EACH ROW 
+BEGIN
+END; //
+
+DELIMITER ;
+
+DESCRIBE Library;
+DESCRIBE Library_Audit;
+
